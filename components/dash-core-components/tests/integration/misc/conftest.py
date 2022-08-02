@@ -46,11 +46,16 @@ def platter_app():
                     ),
                     dcc.Tab(
                         label="Tab three",
-                        children=[html.Div([html.H1("This is the content in tab 3")])],
+                        children=[
+                            html.Div([html.H1("This is the content in tab 3")])
+                        ],
                     ),
                 ],
                 style={"fontFamily": "system-ui"},
-                content_style={"border": "1px solid #d6d6d6", "padding": "44px"},
+                content_style={
+                    "border": "1px solid #d6d6d6",
+                    "padding": "44px",
+                },
                 parent_style={"maxWidth": "1000px", "margin": "0 auto"},
             ),
             html.Label("Vertical Tabs"),
@@ -72,7 +77,9 @@ def platter_app():
                     ),
                     dcc.Tab(
                         label="Tab three",
-                        children=[html.Div([html.H1("This is the content in tab 3")])],
+                        children=[
+                            html.Div([html.H1("This is the content in tab 3")])
+                        ],
                     ),
                 ],
             ),
@@ -98,7 +105,7 @@ def platter_app():
                 min=0,
                 max=9,
                 marks={
-                    i: "Label {}".format(i) if i == 1 else str(i) for i in range(1, 6)
+                    i: f"Label {i}" if i == 1 else str(i) for i in range(1, 6)
                 },
                 value=5,
             ),
@@ -176,7 +183,9 @@ def platter_app():
                 ]
             ),
             html.Label("TextArea"),
-            dcc.Textarea(placeholder="Enter a value... 北京", style={"width": "100%"}),
+            dcc.Textarea(
+                placeholder="Enter a value... 北京", style={"width": "100%"}
+            ),
             html.Label("Markdown"),
             dcc.Markdown(
                 """
@@ -217,5 +226,6 @@ def platter_app():
             dcc.Markdown(),
         ]
     )
+
 
     yield app

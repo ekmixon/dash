@@ -102,7 +102,7 @@ def check_callback_inputs_for_grouping(grouping):
     )(mock_fn)
 
     flat_input_state_values = flatten_grouping(grouping)
-    flat_input_values = flat_input_state_values[0::2]
+    flat_input_values = flat_input_state_values[::2]
     flat_state_values = flat_input_state_values[1::2]
     flat_inputs = flat_input_values + flat_state_values
 

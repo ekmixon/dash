@@ -130,7 +130,7 @@ def generate_class_file(typename, props, description, namespace):
         f.write(import_string)
         f.write(class_string)
 
-    print("Generated {}".format(file_name))
+    print(f"Generated {file_name}")
 
 
 def generate_imports(project_shortname, components):
@@ -138,9 +138,10 @@ def generate_imports(project_shortname, components):
         imports_string = "{}\n\n{}".format(
             "\n".join("from .{0} import {0}".format(x) for x in components),
             "__all__ = [\n{}\n]".format(
-                ",\n".join('    "{}"'.format(x) for x in components)
+                ",\n".join(f'    "{x}"' for x in components)
             ),
         )
+
 
         f.write(imports_string)
 
@@ -177,8 +178,7 @@ def generate_class(typename, props, description, namespace):
     scope = {"Component": Component, "_explicitize_args": _explicitize_args}
     # pylint: disable=exec-used
     exec(string, scope)
-    result = scope[typename]
-    return result
+    return scope[typename]
 
 
 def required_props(props):
@@ -262,11 +262,11 @@ def parse_wildcards(props):
     list
         List of Dash valid wildcard prefixes
     """
-    list_of_valid_wildcard_attr_prefixes = []
-    for wildcard_attr in ["data-*", "aria-*"]:
-        if wildcard_attr in props:
-            list_of_valid_wildcard_attr_prefixes.append(wildcard_attr[:-1])
-    return list_of_valid_wildcard_attr_prefixes
+    return [
+        wildcard_attr[:-1]
+        for wildcard_attr in ["data-*", "aria-*"]
+        if wildcard_attr in props
+    ]
 
 
 def reorder_props(props):
@@ -345,16 +345,13 @@ def filter_props(props):
             arg_type = arg["type"]["name"]
             if arg_type in {"func", "symbol", "instanceOf"}:
                 filtered_props.pop(arg_name)
-        elif "flowType" in arg:  # These come from Flow & handled differently
-            arg_type_name = arg["flowType"]["name"]
-            if arg_type_name == "signature":
-                # This does the same as the PropTypes filter above, but "func"
-                # is under "type" if "name" is "signature" vs just in "name"
-                if "type" not in arg["flowType"] or arg["flowType"]["type"] != "object":
-                    filtered_props.pop(arg_name)
         else:
-            raise ValueError
-
+            arg_type_name = arg["flowType"]["name"]
+            if arg_type_name == "signature" and (
+                "type" not in arg["flowType"]
+                or arg["flowType"]["type"] != "object"
+            ):
+                filtered_props.pop(arg_name)
     return filtered_props
 
 
@@ -421,7 +418,7 @@ def create_prop_docstring(
     # formats description
     period = "." if description else ""
     description = description.strip().strip(".").replace('"', r"\"") + period
-    desc_indent = indent_spacing + "    "
+    desc_indent = f"{indent_spacing}    "
     description = fill(
         description,
         initial_indent=desc_indent,
@@ -429,7 +426,7 @@ def create_prop_docstring(
         break_long_words=False,
         break_on_hyphens=False,
     )
-    description = "\n{}".format(description) if description else ""
+    description = f"\n{description}" if description else ""
     colon = ":" if description else ""
     description = fix_keywords(description)
 
@@ -439,7 +436,7 @@ def create_prop_docstring(
 
         # format and rewrite the intro to the nested dicts
         intro1, intro2, dict_descr = py_type_name.partition("with keys:")
-        intro = "".join(["`{}`".format(prop_name), " is a ", intro1, intro2])
+        intro = "".join([f"`{prop_name}`", " is a ", intro1, intro2])
         intro = fill(
             intro,
             initial_indent=desc_indent,
@@ -452,7 +449,7 @@ def create_prop_docstring(
         if "| dict with keys:" in dict_descr:
             dict_part1, dict_part2 = dict_descr.split(" |", 1)
             dict_part2 = "".join([desc_indent, "Or", dict_part2])
-            dict_descr = "{}\n\n  {}".format(dict_part1, dict_part2)
+            dict_descr = f"{dict_part1}\n\n  {dict_part2}"
 
         # ensures indent is correct if there is a second nested list of dicts
         current_indent = dict_descr.lstrip("\n").find("-")
@@ -480,7 +477,7 @@ def create_prop_docstring(
         "{description}".format(
             indent_spacing=indent_spacing,
             name=prop_name,
-            type="{}; ".format(py_type_name) if py_type_name else "",
+            type=f"{py_type_name}; " if py_type_name else "",
             colon=colon,
             description=description,
             is_required=is_required,
@@ -562,21 +559,18 @@ def map_js_to_py_types_flow_types(type_object):
         any=lambda: "bool | number | str | dict | list",
         Element=lambda: "dash component",
         Node=lambda: "a list of or a singular dash component, string or number",
-        # React's PropTypes.oneOfType
         union=lambda: "{}".format(
             " | ".join(
-                "{}".format(js_to_py_type(subType))
+                f"{js_to_py_type(subType)}"
                 for subType in type_object["elements"]
                 if js_to_py_type(subType) != ""
             )
         ),
-        # Flow's Array type
         Array=lambda: "list{}".format(
-            " of {}s".format(js_to_py_type(type_object["elements"][0]))
+            f' of {js_to_py_type(type_object["elements"][0])}s'
             if js_to_py_type(type_object["elements"][0]) != ""
             else ""
         ),
-        # React's PropTypes.shape
         signature=lambda indent_num: "dict with keys:\n{}".format(
             "\n".join(
                 create_prop_docstring(

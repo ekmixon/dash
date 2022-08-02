@@ -31,9 +31,10 @@ def booststrap_components(components_source):
     )
 
     cmd = shlex.split(
-        "npx lerna exec --scope *@({})* -- npm i".format(source_glob),
+        f"npx lerna exec --scope *@({source_glob})* -- npm i",
         posix=not is_windows,
     )
+
 
     with subprocess.Popen(
         cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=is_windows
@@ -46,16 +47,13 @@ def booststrap_components(components_source):
 
     if status == 0:
         print(
-            "🟢 Finished installing npm dependencies for the following component packages: {} (status={}) 🟢".format(
-                source_glob, status
-            ),
+            f"🟢 Finished installing npm dependencies for the following component packages: {source_glob} (status={status}) 🟢",
             file=sys.stderr,
         )
+
     if not out:
         print(
-            "Failed installing npm dependencies for the following component packages {} (status={})".format(
-                source_glob, status
-            ),
+            f"Failed installing npm dependencies for the following component packages {source_glob} (status={status})",
             file=sys.stderr,
         )
 
@@ -71,9 +69,10 @@ def build_components(components_source):
     )
 
     cmd = shlex.split(
-        "npx lerna exec --scope *@({})* -- npm run build".format(source_glob),
+        f"npx lerna exec --scope *@({source_glob})* -- npm run build",
         posix=not is_windows,
     )
+
 
     with subprocess.Popen(
         cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=is_windows
@@ -86,11 +85,10 @@ def build_components(components_source):
 
     if not out:
         print(
-            "🟢 Finished updating the following component packages {} (status={}) 🟢".format(
-                source_glob, status
-            ),
+            f"🟢 Finished updating the following component packages {source_glob} (status={status}) 🟢",
             file=sys.stderr,
         )
+
         sys.exit(1)
 
     for package in source_glob.split("|"):
@@ -117,12 +115,11 @@ def build_components(components_source):
 
         if not os.path.exists(build_directory):
             print(
-                "Could not locate build artifacts. Check that the npm build process completed successfully for the given package: {}".format(
-                    package
-                )
+                f"Could not locate build artifacts. Check that the npm build process completed successfully for the given package: {package}"
             )
+
         else:
-            print("🚚 Moving build artifacts from " + build_directory + " to Dash 🚚")
+            print(f"🚚 Moving build artifacts from {build_directory} to Dash 🚚")
             shutil.rmtree(dest_path)
             shutil.copytree(build_directory, dest_path)
             with open(os.path.join(dest_path, ".gitkeep"), "w"):

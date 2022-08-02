@@ -22,9 +22,10 @@ def test_slsh001_rangeslider_shorthand_props(dash_dcc):
     for t in TEST_CASES:
         min, max, steps = t
         marks = {
-            i: "Label {}".format(i) if i == 1 else str(i)
+            i: f"Label {i}" if i == 1 else str(i)
             for i in range(math.ceil(min), math.floor(max))
         }
+
 
         LAYOUT.extend(
             [
@@ -142,20 +143,16 @@ def test_slsh001_rangeslider_shorthand_props(dash_dcc):
 
 def test_slsh002_sliders_marks_si_unit_format(dash_dcc):
 
-    LAYOUT = []
+    LAYOUT = [
+        html.Div(
+            "Testing SI units",
+            style={"marginBottom": 10, "marginTop": 30},
+        )
+    ]
 
-    # Showing SI Units
-    LAYOUT.extend(
-        [
-            html.Div(
-                "Testing SI units",
-                style={"marginBottom": 10, "marginTop": 30},
-            ),
-        ]
-    )
 
+    min = 0
     for n in range(-20, 20):
-        min = 0
         max = pow(10, n)
 
         LAYOUT.extend(

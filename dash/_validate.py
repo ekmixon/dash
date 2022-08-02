@@ -96,8 +96,7 @@ def validate_id_string(arg):
     arg_id = arg.component_id
 
     invalid_chars = ".{"
-    invalid_found = [x for x in invalid_chars if x in arg_id]
-    if invalid_found:
+    if invalid_found := [x for x in invalid_chars if x in arg_id]:
         raise exceptions.InvalidComponentIdError(
             """
             The element `{}` contains `{}` in its ID.
@@ -122,7 +121,7 @@ def validate_output_spec(output, output_spec, Output):
     for outi, speci in zip(output, output_spec):
         speci_list = speci if isinstance(speci, (list, tuple)) else [speci]
         for specij in speci_list:
-            if not Output(specij["id"], specij["property"]) == outi:
+            if Output(specij["id"], specij["property"]) != outi:
                 raise exceptions.CallbackException(
                     "Output does not match callback definition"
                 )
@@ -241,12 +240,13 @@ def fail_callback_output(output_value, output):
                 """
             ).format(
                 output=repr(output),
-                object="tree with one value" if not toplevel else "value",
+                object="value" if toplevel else "tree with one value",
                 type=bad_type,
                 location=location,
                 bad_val=bad_val,
             )
         )
+
 
     def _valid_child(val):
         return isinstance(val, valid_children)
@@ -290,14 +290,17 @@ def fail_callback_output(output_value, output):
                 # Children that are not of type Component or
                 # list/tuple not returned by traverse
                 child = getattr(j, "children", None)
-                if not isinstance(child, (tuple, MutableSequence)):
-                    if child and not _can_serialize(child):
-                        _raise_invalid(
-                            bad_val=child,
-                            outer_val=val,
-                            path=p + "\n" + "[*] " + type(child).__name__,
-                            index=index,
-                        )
+                if (
+                    not isinstance(child, (tuple, MutableSequence))
+                    and child
+                    and not _can_serialize(child)
+                ):
+                    _raise_invalid(
+                        bad_val=child,
+                        outer_val=val,
+                        path=p + "\n" + "[*] " + type(child).__name__,
+                        index=index,
+                    )
             if unserializable_items:
                 p, j = unserializable_items[0]
                 # just report the first one, even if there are multiple,
@@ -306,14 +309,17 @@ def fail_callback_output(output_value, output):
 
             # Also check the child of val, as it will not be returned
             child = getattr(val, "children", None)
-            if not isinstance(child, (tuple, MutableSequence)):
-                if child and not _can_serialize(val):
-                    _raise_invalid(
-                        bad_val=child,
-                        outer_val=val,
-                        path=type(child).__name__,
-                        index=index,
-                    )
+            if (
+                not isinstance(child, (tuple, MutableSequence))
+                and child
+                and not _can_serialize(val)
+            ):
+                _raise_invalid(
+                    bad_val=child,
+                    outer_val=val,
+                    path=type(child).__name__,
+                    index=index,
+                )
 
         if not _can_serialize(val):
             _raise_invalid(
@@ -384,8 +390,9 @@ def validate_js_path(registered_paths, package_name, path_in_package_dist):
 
 
 def validate_index(name, checks, index):
-    missing = [i for check, i in checks if not re.compile(check).search(index)]
-    if missing:
+    if missing := [
+        i for check, i in checks if not re.compile(check).search(index)
+    ]:
         plural = "s" if len(missing) > 1 else ""
         raise exceptions.InvalidIndexException(
             "Missing item{pl} {items} in {name}.".format(

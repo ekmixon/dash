@@ -112,7 +112,7 @@ class Browser(DashPageMixin):
             path = resource_path.lstrip("/")
             if path != resource_path:
                 logger.warning("we stripped the left '/' in resource_path")
-            self.driver.get("{}/{}".format(self.server_url.rstrip("/"), path))
+            self.driver.get(f'{self.server_url.rstrip("/")}/{path}')
 
             # wait for the hook_id to present and all callbacks get fired
             self.wait_for_element_by_id(hook_id)
@@ -152,9 +152,7 @@ class Browser(DashPageMixin):
         """
         if widths is None:
             widths = [375, 1280]
-        snapshot_name = "{} - py{}.{}".format(
-            name, sys.version_info.major, sys.version_info.minor
-        )
+        snapshot_name = f"{name} - py{sys.version_info.major}.{sys.version_info.minor}"
         logger.info("taking snapshot name => %s", snapshot_name)
         try:
             if wait_for_callbacks:
@@ -218,16 +216,14 @@ class Browser(DashPageMixin):
         with a filename combining test case name and the
         running selenium session id
         """
-        target = "/tmp/dash_artifacts" if not self._is_windows() else os.getenv("TEMP")
+        target = os.getenv("TEMP") if self._is_windows() else "/tmp/dash_artifacts"
         if not os.path.exists(target):
             try:
                 os.mkdir(target)
             except OSError:
                 logger.exception("cannot make artifacts")
 
-        self.driver.save_screenshot(
-            "{}/{}_{}.png".format(target, name, self.session_id)
-        )
+        self.driver.save_screenshot(f"{target}/{name}_{self.session_id}.png")
 
     def find_element(self, selector):
         """find_element returns the first found element by the css `selector`
@@ -274,22 +270,18 @@ class Browser(DashPageMixin):
             EC.presence_of_element_located,
             ((By.CSS_SELECTOR, selector),),
             timeout,
-            "timeout {}s => waiting for selector {}".format(
-                timeout if timeout else self._wait_timeout, selector
-            ),
+            f"timeout {timeout or self._wait_timeout}s => waiting for selector {selector}",
         )
 
     def wait_for_no_elements(self, selector, timeout=None):
         """Explicit wait until an element is NOT found. timeout defaults to
         the fixture's `wait_timeout`."""
         until(
-            # if we use get_elements it waits a long time to see if they appear
-            # so this one calls out directly to execute_script
             lambda: self.driver.execute_script(
-                "return document.querySelectorAll('{}').length".format(selector)
+                f"return document.querySelectorAll('{selector}').length"
             )
             == 0,
-            timeout if timeout else self._wait_timeout,
+            timeout or self._wait_timeout,
         )
 
     def wait_for_element_by_id(self, element_id, timeout=None):
@@ -300,9 +292,7 @@ class Browser(DashPageMixin):
             EC.presence_of_element_located,
             ((By.ID, element_id),),
             timeout,
-            "timeout {}s => waiting for element id {}".format(
-                timeout if timeout else self._wait_timeout, element_id
-            ),
+            f"timeout {timeout or self._wait_timeout}s => waiting for element id {element_id}",
         )
 
     def wait_for_style_to_equal(self, selector, style, val, timeout=None):
@@ -313,9 +303,7 @@ class Browser(DashPageMixin):
             method=style_to_equal,
             args=(selector, style, val),
             timeout=timeout,
-            msg="style val => {} {} not found within {}s".format(
-                style, val, timeout if timeout else self._wait_timeout
-            ),
+            msg=f"style val => {style} {val} not found within {timeout or self._wait_timeout}s",
         )
 
     def wait_for_text_to_equal(self, selector, text, timeout=None):
@@ -329,9 +317,7 @@ class Browser(DashPageMixin):
             method=text_to_equal,
             args=(selector, text),
             timeout=timeout,
-            msg="text -> {} not found within {}s".format(
-                text, timeout if timeout else self._wait_timeout
-            ),
+            msg=f"text -> {text} not found within {timeout or self._wait_timeout}s",
         )
 
     def wait_for_contains_text(self, selector, text, timeout=None):
@@ -345,9 +331,7 @@ class Browser(DashPageMixin):
             method=contains_text,
             args=(selector, text),
             timeout=timeout,
-            msg="text -> {} not found inside element within {}s".format(
-                text, timeout if timeout else self._wait_timeout
-            ),
+            msg=f"text -> {text} not found inside element within {timeout or self._wait_timeout}s",
         )
 
     def wait_for_page(self, url=None, timeout=10):
@@ -389,8 +373,9 @@ class Browser(DashPageMixin):
         menu = dropdown.find_element_by_css_selector("div.Select-menu-outer")
         logger.debug("the available options are %s", "|".join(menu.text.split("\n")))
 
-        options = menu.find_elements_by_css_selector("div.VirtualizedSelectOption")
-        if options:
+        if options := menu.find_elements_by_css_selector(
+            "div.VirtualizedSelectOption"
+        ):
             if isinstance(index, int):
                 options[index].click()
                 return
@@ -421,14 +406,12 @@ class Browser(DashPageMixin):
     def open_new_tab(self, url=None):
         """Open a new tab in browser url is not set, equals to `server_url`."""
         self.driver.execute_script(
-            'window.open("{}", "new window")'.format(
-                self.server_url if url is None else url
-            )
+            f'window.open("{self.server_url if url is None else url}", "new window")'
         )
 
     def get_webdriver(self):
         try:
-            return getattr(self, "_get_{}".format(self._browser))()
+            return getattr(self, f"_get_{self._browser}")()
         except WebDriverException:
             logger.exception("<<<Webdriver not initialized correctly>>>")
             return None
@@ -593,8 +576,7 @@ class Browser(DashPageMixin):
     def reset_log_timestamp(self):
         """reset_log_timestamp only work with chrome webdriver."""
         if self.driver.name.lower() == "chrome":
-            entries = self.driver.get_log("browser")
-            if entries:
+            if entries := self.driver.get_log("browser"):
                 self._last_ts = entries[-1]["timestamp"]
 
     @property

@@ -73,10 +73,11 @@ def test_slsl003_out_of_range_marks_slider(dash_dcc):
     app.layout = html.Div(
         [
             dcc.Slider(
-                min=0, max=5, marks={i: "Label {}".format(i) for i in range(-1, 10)}
+                min=0, max=5, marks={i: f"Label {i}" for i in range(-1, 10)}
             )
         ]
     )
+
 
     dash_dcc.start_server(app)
 
@@ -91,10 +92,11 @@ def test_slsl004_out_of_range_marks_rangeslider(dash_dcc):
     app.layout = html.Div(
         [
             dcc.RangeSlider(
-                min=0, max=5, marks={i: "Label {}".format(i) for i in range(-1, 10)}
+                min=0, max=5, marks={i: f"Label {i}" for i in range(-1, 10)}
             )
         ]
     )
+
 
     dash_dcc.start_server(app)
 
@@ -421,12 +423,13 @@ def test_slsl011_horizontal_slider(dash_dcc):
                 min=0,
                 max=9,
                 marks={
-                    i: "Label {}".format(i) if i == 1 else str(i) for i in range(1, 6)
+                    i: f"Label {i}" if i == 1 else str(i) for i in range(1, 6)
                 },
                 value=5,
             ),
         ]
     )
+
 
     dash_dcc.start_server(app)
     dash_dcc.wait_for_element("#horizontal-slider")
@@ -446,7 +449,7 @@ def test_slsl012_vertical_slider(dash_dcc):
                 min=0,
                 max=9,
                 marks={
-                    i: "Label {}".format(i) if i == 1 else str(i) for i in range(1, 6)
+                    i: f"Label {i}" if i == 1 else str(i) for i in range(1, 6)
                 },
                 value=5,
                 vertical=True,
@@ -454,6 +457,7 @@ def test_slsl012_vertical_slider(dash_dcc):
         ],
         style={"height": "500px"},
     )
+
 
     dash_dcc.start_server(app)
     dash_dcc.wait_for_element("#vertical-slider")
@@ -473,12 +477,13 @@ def test_slsl013_horizontal_range_slider(dash_dcc):
                 min=0,
                 max=9,
                 marks={
-                    i: "Label {}".format(i) if i == 1 else str(i) for i in range(1, 6)
+                    i: f"Label {i}" if i == 1 else str(i) for i in range(1, 6)
                 },
                 value=[4, 6],
             ),
         ]
     )
+
 
     dash_dcc.start_server(app)
     dash_dcc.wait_for_element("#horizontal-range-slider")
@@ -503,7 +508,7 @@ def test_slsl014_vertical_range_slider(dash_dcc):
                 min=0,
                 max=9,
                 marks={
-                    i: "Label {}".format(i) if i == 1 else str(i) for i in range(1, 6)
+                    i: f"Label {i}" if i == 1 else str(i) for i in range(1, 6)
                 },
                 value=[4, 6],
                 vertical=True,
@@ -511,6 +516,7 @@ def test_slsl014_vertical_range_slider(dash_dcc):
         ],
         style={"height": "500px"},
     )
+
 
     dash_dcc.start_server(app)
     dash_dcc.wait_for_element("#vertical-range-slider")

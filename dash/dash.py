@@ -300,7 +300,7 @@ class Dash:
             if name is None:
                 name = getattr(server, "name", "__main__")
         elif isinstance(server, bool):
-            name = name if name else "__main__"
+            name = name or "__main__"
             self.server = flask.Flask(name) if server else None
         else:
             raise ValueError("server must be a Flask app or a boolean")
@@ -616,7 +616,7 @@ class Dash:
         # for cache busting
         def _relative_url_path(relative_package_path="", namespace=""):
             if any(
-                relative_package_path.startswith(x + "/")
+                relative_package_path.startswith(f"{x}/")
                 for x in ["dcc", "html", "dash_table"]
             ):
                 relative_package_path = relative_package_path.replace("dash.", "")
@@ -700,9 +700,10 @@ class Dash:
 
         deps = []
         for js_dist_dependency in _dash_renderer._js_dist_dependencies:
-            dep = {}
-            for key, value in js_dist_dependency.items():
-                dep[key] = value[mode] if isinstance(value, dict) else value
+            dep = {
+                key: value[mode] if isinstance(value, dict) else value
+                for key, value in js_dist_dependency.items()
+            }
 
             deps.append(dep)
 
@@ -733,26 +734,22 @@ class Dash:
         _callback.GLOBAL_INLINE_SCRIPTS.clear()
 
         return "\n".join(
-            [
-                format_tag("script", src)
-                if isinstance(src, dict)
-                else '<script src="{}"></script>'.format(src)
-                for src in srcs
-            ]
-            + ["<script>{}</script>".format(src) for src in self._inline_scripts]
+            (
+                [
+                    format_tag("script", src)
+                    if isinstance(src, dict)
+                    else f'<script src="{src}"></script>'
+                    for src in srcs
+                ]
+                + [f"<script>{src}</script>" for src in self._inline_scripts]
+            )
         )
 
     def _generate_config_html(self):
-        return '<script id="_dash-config" type="application/json">{}</script>'.format(
-            to_json(self._config())
-        )
+        return f'<script id="_dash-config" type="application/json">{to_json(self._config())}</script>'
 
     def _generate_renderer(self):
-        return (
-            '<script id="_dash-renderer" type="application/javascript">'
-            "{}"
-            "</script>"
-        ).format(self.renderer)
+        return f'<script id="_dash-renderer" type="application/javascript">{self.renderer}</script>'
 
     def _generate_meta_html(self):
         meta_tags = self.config.meta_tags
@@ -805,7 +802,7 @@ class Dash:
 
             request_etag = flask.request.headers.get("If-None-Match")
 
-            if '"{}"'.format(tag) == request_etag:
+            if f'"{tag}"' == request_etag:
                 response = flask.Response(None, status=304)
 
         return response
@@ -824,13 +821,10 @@ class Dash:
             favicon_mod_time = os.path.getmtime(
                 os.path.join(self.config.assets_folder, self._favicon)
             )
-            favicon_url = self.get_asset_url(self._favicon) + "?m={}".format(
-                favicon_mod_time
-            )
+            favicon_url = (self.get_asset_url(self._favicon) + f"?m={favicon_mod_time}")
         else:
-            favicon_url = "{}_favicon.ico?v={}".format(
-                self.config.requests_pathname_prefix, __version__
-            )
+            favicon_url = f"{self.config.requests_pathname_prefix}_favicon.ico?v={__version__}"
+
 
         favicon = format_tag(
             "link",
@@ -1314,10 +1308,9 @@ class Dash:
 
             # Add outputs_grouping
             outputs_indices = cb["outputs_indices"]
-            if not isinstance(outputs_list, list):
-                flat_outputs = [outputs_list]
-            else:
-                flat_outputs = outputs_list
+            flat_outputs = (
+                outputs_list if isinstance(outputs_list, list) else [outputs_list]
+            )
 
             outputs_grouping = map_grouping(
                 lambda ind: flat_outputs[ind], outputs_indices
@@ -1360,11 +1353,12 @@ class Dash:
 
             if k in self.callback_map:
                 raise DuplicateCallback(
-                    "The callback `{}` provided with `dash.callback` was already ".format(
-                        k
+                    (
+                        f"The callback `{k}` provided with `dash.callback` was already "
+                        + "assigned with `app.callback`."
                     )
-                    + "assigned with `app.callback`."
                 )
+
 
             self.callback_map[k] = _callback.GLOBAL_CALLBACK_MAP.pop(k)
 
@@ -1390,11 +1384,7 @@ class Dash:
             else:
                 s = current.replace(walk_dir, "").lstrip("\\").lstrip("/")
                 splitted = slash_splitter.split(s)
-                if len(splitted) > 1:
-                    base = "/".join(slash_splitter.split(s))
-                else:
-                    base = splitted[0]
-
+                base = "/".join(slash_splitter.split(s)) if len(splitted) > 1 else splitted[0]
             if ignore_filter:
                 files_gen = (x for x in files if not ignore_filter.search(x))
             else:
@@ -1462,14 +1452,12 @@ class Dash:
         ]
 
     def get_asset_url(self, path):
-        if self.config.assets_external_path:
-            prefix = self.config.assets_external_path
-        else:
-            prefix = self.config.requests_pathname_prefix
+        prefix = (
+            self.config.assets_external_path
+            or self.config.requests_pathname_prefix
+        )
 
-        asset = get_asset_path(prefix, path, self.config.assets_url_path.lstrip("/"))
-
-        return asset
+        return get_asset_path(prefix, path, self.config.assets_url_path.lstrip("/"))
 
     def get_relative_path(self, path):
         """
@@ -1508,9 +1496,7 @@ class Dash:
                 return chapters.page_2
         ```
         """
-        asset = get_relative_path(self.config.requests_pathname_prefix, path)
-
-        return asset
+        return get_relative_path(self.config.requests_pathname_prefix, path)
 
     def strip_relative_path(self, path):
         """

@@ -50,9 +50,7 @@ def display_app(pathname):
                         html.Li(
                             dcc.Link(
                                 name.replace("app_", "").replace("_", " "),
-                                href="/{}".format(
-                                    name.replace("app_", "").replace("_", "-")
-                                ),
+                                href=f'/{name.replace("app_", "").replace("_", "-")}',
                             )
                         )
                         for name in apps
@@ -60,6 +58,7 @@ def display_app(pathname):
                 ),
             ],
         )
+
 
     app_name = pathname.replace("/", "").replace("-", "_")
     if app_name in apps:

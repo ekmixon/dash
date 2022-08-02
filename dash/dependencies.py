@@ -13,12 +13,12 @@ class _Wildcard:  # pylint: disable=too-few-public-methods
         return self._name
 
     def __repr__(self):
-        return "<{}>".format(self)
+        return f"<{self}>"
 
     def to_json(self):
         # used in serializing wildcards - arrays are not allowed as
         # id values, so make the wildcards look like length-1 arrays.
-        return '["{}"]'.format(self._name)
+        return f'["{self._name}"]'
 
 
 MATCH = _Wildcard("MATCH")
@@ -37,10 +37,10 @@ class DashDependency:  # pylint: disable=too-few-public-methods
         self.component_property = component_property
 
     def __str__(self):
-        return "{}.{}".format(self.component_id_str(), self.component_property)
+        return f"{self.component_id_str()}.{self.component_property}"
 
     def __repr__(self):
-        return "<{} `{}`>".format(self.__class__.__name__, self)
+        return f"<{self.__class__.__name__} `{self}`>"
 
     def component_id_str(self):
         i = self.component_id
@@ -143,15 +143,13 @@ class ClientsideFunction:  # pylint: disable=too-few-public-methods
             raise ValueError("Namespaces cannot start with '_dashprivate_'.")
 
         if namespace in ["PreventUpdate", "no_update"]:
-            raise ValueError(
-                '"{}" is a forbidden namespace in' " dash_clientside.".format(namespace)
-            )
+            raise ValueError(f'"{namespace}" is a forbidden namespace in dash_clientside.')
 
         self.namespace = namespace
         self.function_name = function_name
 
     def __repr__(self):
-        return "ClientsideFunction({}, {})".format(self.namespace, self.function_name)
+        return f"ClientsideFunction({self.namespace}, {self.function_name})"
 
 
 def extract_grouped_output_callback_args(args, kwargs):
@@ -239,12 +237,7 @@ def extract_grouped_input_state_callback_args_from_args(args):
         else:
             break
 
-    if len(parameters) == 1:
-        # Only one output grouping, return as-is
-        return parameters[0]
-
-    # Multiple output groupings, return wrap in tuple
-    return parameters
+    return parameters[0] if len(parameters) == 1 else parameters
 
 
 def extract_grouped_input_state_callback_args(args, kwargs):

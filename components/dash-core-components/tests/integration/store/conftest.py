@@ -6,7 +6,7 @@ from dash import Dash, Input, State, Output, dcc, html
 from dash.exceptions import PreventUpdate
 
 
-UUID = "store-test-{}".format(uuid.uuid4().hex)
+UUID = f"store-test-{uuid.uuid4().hex}"
 
 
 @pytest.fixture(scope="module")
@@ -25,14 +25,12 @@ def store_app():
     )
 
     @app.callback(
-        Output("output", "children"),
-        [Input("memory", "modified_timestamp")],
-        [State("memory", "data")],
-    )
+            Output("output", "children"),
+            [Input("memory", "modified_timestamp")],
+            [State("memory", "data")],
+        )
     def write_memory(modified_ts, data):
-        if data is None:
-            return ""
-        return json.dumps(data)
+        return "" if data is None else json.dumps(data)
 
     @app.callback(
         [
@@ -68,11 +66,9 @@ def csv_5mb():
     while sys.getsizeof(buf) <= limit:
         g = mimesis.Generic()
         chunk = "\n".join(
-            (
-                "{},{}".format(g.person.full_name(), g.person.email())
-                for _ in range(10000)
-            )
+            f"{g.person.full_name()},{g.person.email()}" for _ in range(10000)
         )
+
         chunks.append(chunk)
         buf = "".join(chunks)
 

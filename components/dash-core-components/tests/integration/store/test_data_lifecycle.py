@@ -16,7 +16,7 @@ def test_stdl001_data_lifecycle_with_different_condition(store_app, dash_dcc):
     }, "session storage should contain the same click nums"
 
     dash_dcc.driver.refresh()
-    dash_dcc.wait_for_text_to_equal("#output", '"{}"'.format(store_app.uuid))
+    dash_dcc.wait_for_text_to_equal("#output", f'"{store_app.uuid}"')
     assert dash_dcc.get_local_storage() == {"n_clicks": nclicks}
     assert dash_dcc.get_session_storage() == {"n_clicks": nclicks}
 
@@ -25,7 +25,7 @@ def test_stdl001_data_lifecycle_with_different_condition(store_app, dash_dcc):
     assert dash_dcc.get_local_storage() == {
         "n_clicks": nclicks
     }, "local storage should be persistent"
-    dash_dcc.wait_for_text_to_equal("#output", '"{}"'.format(store_app.uuid))
+    dash_dcc.wait_for_text_to_equal("#output", f'"{store_app.uuid}"')
 
     dash_dcc.multiple_click("#btn", 2)
     wait.until(lambda: dash_dcc.get_session_storage() == {"n_clicks": 2}, timeout=1)
@@ -36,7 +36,7 @@ def test_stdl001_data_lifecycle_with_different_condition(store_app, dash_dcc):
     dash_dcc.driver.close()
     dash_dcc.switch_window()
     assert dash_dcc.get_local_storage() == {"n_clicks": 2}
-    dash_dcc.wait_for_text_to_equal("#output", '"{}"'.format(store_app.uuid))
+    dash_dcc.wait_for_text_to_equal("#output", f'"{store_app.uuid}"')
     assert dash_dcc.get_session_storage() == {
         "n_clicks": nclicks
     }, "session storage should be specific per browser tab window"

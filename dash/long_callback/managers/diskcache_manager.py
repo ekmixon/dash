@@ -36,14 +36,14 @@ DiskcacheLongCallbackManager requires extra dependencies which can be installed 
 
         if cache is None:
             self.handle = diskcache.Cache()
-        else:
-            if not isinstance(cache, (diskcache.Cache, diskcache.FanoutCache)):
-                raise ValueError(
-                    "First argument must be a diskcache.Cache "
-                    "or diskcache.FanoutCache object"
-                )
+        elif isinstance(cache, (diskcache.Cache, diskcache.FanoutCache)):
             self.handle = cache
 
+        else:
+            raise ValueError(
+                "First argument must be a diskcache.Cache "
+                "or diskcache.FanoutCache object"
+            )
         super().__init__(cache_by)
         self.expire = expire
 
@@ -78,10 +78,9 @@ DiskcacheLongCallbackManager requires extra dependencies which can be installed 
     def terminate_unhealthy_job(self, job):
         import psutil  # pylint: disable=import-outside-toplevel,import-error
 
-        if job and psutil.pid_exists(job):
-            if not self.job_running(job):
-                self.terminate_job(job)
-                return True
+        if job and psutil.pid_exists(job) and not self.job_running(job):
+            self.terminate_job(job)
+            return True
 
         return False
 
@@ -124,9 +123,8 @@ DiskcacheLongCallbackManager requires extra dependencies which can be installed 
         # Clear result if not caching
         if self.cache_by is None:
             self.clear_cache_entry(key)
-        else:
-            if self.expire:
-                self.handle.touch(key, expire=self.expire)
+        elif self.expire:
+            self.handle.touch(key, expire=self.expire)
 
         self.clear_cache_entry(self._make_progress_key(key))
 

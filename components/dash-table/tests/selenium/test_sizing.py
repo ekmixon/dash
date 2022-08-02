@@ -165,7 +165,7 @@ def test_szng001_widths_on_style_change(test):
     ]
 
     fixes = [
-        dict(),
+        {},
         dict(fixed_columns=dict(headers=True)),
         dict(fixed_rows=dict(headers=True)),
         dict(fixed_columns=dict(headers=True), fixed_rows=dict(headers=True)),
@@ -177,6 +177,7 @@ def test_szng001_widths_on_style_change(test):
         ),
     ]
 
+
     variations = []
     style = styles[0]
     i = 0
@@ -184,7 +185,7 @@ def test_szng001_widths_on_style_change(test):
         variations.append({**style, **fix, **base_props, "id": "table{}".format(i)})
         i = i + 1
 
-    variations_range = range(0, len(variations))
+    variations_range = range(len(variations))
 
     tables = [DataTable(**variation) for variation in variations]
 
@@ -226,8 +227,8 @@ def test_szng001_widths_on_style_change(test):
     test.start_server(app)
 
     for style in styles:
-        display = style.get("style_table", dict()).get("display")
-        width = style.get("style_table", dict()).get("width")
+        display = style.get("style_table", {}).get("display")
+        width = style.get("style_table", {}).get("width")
         target = (
             test.driver.find_element_by_css_selector("#table{}".format(width))
             if display != "none"
@@ -272,9 +273,10 @@ def test_szng002_percentages_result_in_same_widths(test):
                         "fixed_columns": fixed_columns,
                         "fixed_rows": fixed_rows,
                         "merge_duplicate_headers": merge_duplicate_headers,
-                        "id": "table{}".format(i),
+                        "id": f"table{i}",
                     }
                 )
+
                 i = i + 1
 
     tables = [DataTable(**variation) for variation in variations]
@@ -288,7 +290,7 @@ def test_szng002_percentages_result_in_same_widths(test):
     cells_are_same_width(target, target)
 
     for i in range(1, len(variations)):
-        table = test.driver.find_element_by_css_selector("#table{}".format(i))
+        table = test.driver.find_element_by_css_selector(f"#table{i}")
         cells_are_same_width(target, table)
 
     assert test.get_log_errors() == []

@@ -578,7 +578,7 @@ def test_clsd012_clientside_callback_context_states(dash_duo):
         ),
     )
 
-    dash_duo.find_element("#in0").send_keys("test 0" + Keys.RETURN)
+    dash_duo.find_element("#in0").send_keys(f"test 0{Keys.RETURN}")
 
     dash_duo.wait_for_text_to_equal(
         "#output-clientside",
@@ -590,7 +590,7 @@ def test_clsd012_clientside_callback_context_states(dash_duo):
         ),
     )
 
-    dash_duo.find_element("input[id*='in1\":0']").send_keys("test 1" + Keys.RETURN)
+    dash_duo.find_element("input[id*='in1\":0']").send_keys(f"test 1{Keys.RETURN}")
 
     dash_duo.wait_for_text_to_equal(
         "#output-clientside",
@@ -602,7 +602,7 @@ def test_clsd012_clientside_callback_context_states(dash_duo):
         ),
     )
 
-    dash_duo.find_element("input[id*='in1\":2']").send_keys("test 2" + Keys.RETURN)
+    dash_duo.find_element("input[id*='in1\":2']").send_keys(f"test 2{Keys.RETURN}")
 
     dash_duo.wait_for_text_to_equal(
         "#output-clientside",
@@ -647,7 +647,7 @@ def test_clsd013_clientside_callback_context_states_list(dash_duo):
         ),
     )
 
-    dash_duo.find_element("#in0").send_keys("test 0" + Keys.RETURN)
+    dash_duo.find_element("#in0").send_keys(f"test 0{Keys.RETURN}")
 
     dash_duo.wait_for_text_to_equal(
         "#output-clientside",
@@ -659,7 +659,7 @@ def test_clsd013_clientside_callback_context_states_list(dash_duo):
         ),
     )
 
-    dash_duo.find_element("input[id*='in1\":0']").send_keys("test 1" + Keys.RETURN)
+    dash_duo.find_element("input[id*='in1\":0']").send_keys(f"test 1{Keys.RETURN}")
 
     dash_duo.wait_for_text_to_equal(
         "#output-clientside",
@@ -671,7 +671,7 @@ def test_clsd013_clientside_callback_context_states_list(dash_duo):
         ),
     )
 
-    dash_duo.find_element("input[id*='in1\":2']").send_keys("test 2" + Keys.RETURN)
+    dash_duo.find_element("input[id*='in1\":2']").send_keys(f"test 2{Keys.RETURN}")
 
     dash_duo.wait_for_text_to_equal(
         "#output-clientside",

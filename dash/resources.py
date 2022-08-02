@@ -61,16 +61,9 @@ class Resources:
                 filtered_resource["ts"] = info.st_mtime
             elif self.config.serve_locally:
                 warnings.warn(
-                    (
-                        "You have set your config to `serve_locally=True` but "
-                        "A local version of {} is not available.\n"
-                        "If you added this file with "
-                        "`app.scripts.append_script` "
-                        "or `app.css.append_css`, use `external_scripts` "
-                        "or `external_stylesheets` instead.\n"
-                        "See https://dash.plotly.com/external-resources"
-                    ).format(s["external_url"])
+                    f'You have set your config to `serve_locally=True` but A local version of {s["external_url"]} is not available.\nIf you added this file with `app.scripts.append_script` or `app.css.append_css`, use `external_scripts` or `external_stylesheets` instead.\nSee https://dash.plotly.com/external-resources'
                 )
+
                 continue
             else:
                 raise exceptions.ResourceException(

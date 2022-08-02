@@ -67,10 +67,9 @@ class DashCoreComponentsMixin(object):
             return
 
         date = self.find_element(
-            '#{} input[aria-label="{} Date"]'.format(
-                compid, "Start" if start_first else "End"
-            )
+            f'#{compid} input[aria-label="{"Start" if start_first else "End"} Date"]'
         )
+
         date.click()
         for day in day_range:
             self._wait_until_day_is_clickable()
@@ -86,7 +85,7 @@ class DashCoreComponentsMixin(object):
     def get_date_range(self, compid):
         return tuple(
             _.get_attribute("value")
-            for _ in self.find_elements("#{} input".format(compid))
+            for _ in self.find_elements(f"#{compid} input")
         )
 
     def _wait_until_day_is_clickable(self, timeout=1):

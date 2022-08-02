@@ -36,10 +36,10 @@ def format_tag(tag_name, attributes, inner="", closed=False, opened=False):
     elif opened:
         tag += ">"
     else:
-        tag += ">" + inner + "</{tag}>"
+        tag += f">{inner}" + "</{tag}>"
     return tag.format(
         tag=tag_name,
-        attributes=" ".join(['{}="{}"'.format(k, v) for k, v in attributes.items()]),
+        attributes=" ".join([f'{k}="{v}"' for k, v in attributes.items()]),
     )
 
 
@@ -157,8 +157,7 @@ class AttributeDict(dict):
     # pylint: disable=inconsistent-return-statements
     def first(self, *names):
         for name in names:
-            value = self.get(name)
-            if value:
+            if value := self.get(name):
                 return value
 
 
@@ -205,7 +204,7 @@ def inputs_to_dict(inputs_list):
         inputsi = i if isinstance(i, list) else [i]
         for ii in inputsi:
             id_str = stringify_id(ii["id"])
-            inputs["{}.{}".format(id_str, ii["property"])] = ii.get("value")
+            inputs[f'{id_str}.{ii["property"]}'] = ii.get("value")
     return inputs
 
 

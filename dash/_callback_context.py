@@ -119,7 +119,7 @@ class CallbackContext:
         timing_information = getattr(flask.g, "timing_information", {})
 
         if name in timing_information:
-            raise KeyError('Duplicate resource name "{}" found.'.format(name))
+            raise KeyError(f'Duplicate resource name "{name}" found.')
 
         timing_information[name] = {"dur": round(duration * 1000), "desc": description}
 

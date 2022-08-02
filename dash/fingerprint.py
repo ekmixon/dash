@@ -8,12 +8,7 @@ def build_fingerprint(path, version, hash_value):
     path_parts = path.split("/")
     filename, extension = path_parts[-1].split(".", 1)
 
-    return "{}.v{}m{}.{}".format(
-        "/".join(path_parts[:-1] + [filename]),
-        re.sub(version_clean, "_", str(version)),
-        hash_value,
-        extension,
-    )
+    return f'{"/".join(path_parts[:-1] + [filename])}.v{re.sub(version_clean, "_", str(version))}m{hash_value}.{extension}'
 
 
 def check_fingerprint(path):

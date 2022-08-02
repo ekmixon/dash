@@ -238,8 +238,8 @@ def register_clientside_callback(
         if isinstance(output, (list, tuple)):
             out0 = output[0]
 
-        namespace = "_dashprivate_{}".format(out0.component_id)
-        function_name = "{}".format(out0.component_property)
+        namespace = f"_dashprivate_{out0.component_id}"
+        function_name = f"{out0.component_property}"
 
         inline_scripts.append(
             _inline_clientside_template.format(
@@ -249,7 +249,6 @@ def register_clientside_callback(
             )
         )
 
-    # Callback is stored in an external asset.
     else:
         namespace = clientside_function.namespace
         function_name = clientside_function.function_name

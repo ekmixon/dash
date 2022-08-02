@@ -47,7 +47,7 @@ def get_combined_config(name, val, default=None):
     if val is not None:
         return val
 
-    env = load_dash_env_vars().get("DASH_{}".format(name.upper()))
+    env = load_dash_env_vars().get(f"DASH_{name.upper()}")
     if env is None:
         return default
 
@@ -94,7 +94,7 @@ def pathname_configs(
             )
         )
 
-    if url_base_pathname is not None and routes_pathname_prefix is None:
+    if url_base_pathname is not None:
         routes_pathname_prefix = url_base_pathname
     elif routes_pathname_prefix is None:
         routes_pathname_prefix = "/"
@@ -109,7 +109,7 @@ def pathname_configs(
     app_name = load_dash_env_vars().DASH_APP_NAME
 
     if not requests_pathname_prefix and app_name:
-        requests_pathname_prefix = "/" + app_name + routes_pathname_prefix
+        requests_pathname_prefix = f"/{app_name}{routes_pathname_prefix}"
     elif requests_pathname_prefix is None:
         requests_pathname_prefix = routes_pathname_prefix
 

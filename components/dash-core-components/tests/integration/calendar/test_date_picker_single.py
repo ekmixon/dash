@@ -14,7 +14,8 @@ def test_dtps001_simple_click(dash_dcc):
                 id="dps",
                 min_date_allowed=datetime(2010, 1, 1),
                 max_date_allowed=datetime(2099, 12, 31),
-                initial_visible_month=datetime.today().date() - timedelta(days=1),
+                initial_visible_month=datetime.now().date()
+                - timedelta(days=1),
                 day_size=47,
             ),
         ],
@@ -26,6 +27,7 @@ def test_dtps001_simple_click(dash_dcc):
             "marginBottom": 10,
         },
     )
+
     dash_dcc.start_server(app)
     date = dash_dcc.find_element("#dps input")
     assert not date.get_attribute("value")
@@ -87,7 +89,8 @@ def test_dtps011_memory_persistence(dash_dcc):
                     id="dps-memory",
                     min_date_allowed=datetime(2010, 1, 1),
                     max_date_allowed=datetime(2099, 12, 31),
-                    initial_visible_month=datetime.today().date() - timedelta(days=1),
+                    initial_visible_month=datetime.now().date()
+                    - timedelta(days=1),
                     persistence=True,
                     persistence_type="memory",
                     day_size=47,
@@ -96,10 +99,12 @@ def test_dtps011_memory_persistence(dash_dcc):
                     id="dps-none",
                     min_date_allowed=datetime(2010, 1, 1),
                     max_date_allowed=datetime(2099, 12, 31),
-                    initial_visible_month=datetime.today().date() - timedelta(days=1),
+                    initial_visible_month=datetime.now().date()
+                    - timedelta(days=1),
                     day_size=47,
                 ),
             ]
+
         else:
             return "switched"
 
